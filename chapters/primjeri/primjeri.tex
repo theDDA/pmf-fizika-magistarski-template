@@ -1,0 +1,188 @@
+% !TEX root = ../../main.tex
+\chapter{Primjeri}
+\label{ch:primjeri}
+
+\section{Matematika}
+
+	Okruženje \texttt{align} poravnava redove po znaku \texttt{\&}, koji ide ispred
+	znaka jednakosti.
+	Kada izraz pređe u novi red, operator se piše na početku novog reda.
+
+	Za konturu $C$ koja ograničava polukružni prsten $1 \le r \le 2$, $0 \le \vp
+		\le \pi$ je, po Greenovoj teoremi,
+	\begin{align}
+		\oint_{C} y^{2} \dd{x} + 3xy \dd{y}
+		 & = \iint_{D} \left( \pdv{(3xy)}{x} - \pdv{(y^{2})}{y} \right) \dd{x} \dd{y}
+		= \iint_{D} y \dd{x} \dd{y}
+		\nonumber                                                                     \\
+		 & = \int_{1}^{2} \int_{0}^{\pi} r^{2} \sin\vp \dd{r} \dd{\vp}
+		= \frac{r^{3}}{3} \bigg|_{1}^{2} \, (-\cos\vp) \bigg|_{0}^{\pi}
+		= \frac{14}{3}.
+		\label{eq:green}
+	\end{align}
+	Jednačina se referencira s \verb+\eqref+, npr.~rezultat~\eqref{eq:green}.
+	Ispred svake reference ide \verb+~+, da se broj ne bi odvojio od prethodne
+	riječi pri prelomima.
+
+	Paket \texttt{slashed} daje Feynmanovu slash notaciju~\cite{peskin}:
+	\begin{equation}
+		\Tr\left[\gamma^{\mu}\slashed{p}_{2}\gamma^{\nu}\slashed{p}_{1}\right]
+		= 4\left[p_{1}^{\mu}p_{2}^{\nu} + p_{2}^{\mu}p_{1}^{\nu}
+			- g^{\mu\nu}(p_{1} \cdot p_{2})\right].
+		\label{eq:trag}
+	\end{equation}
+
+	Vektorske operacije se pišu kako je uobičajeno kod nas, $\ddiv \rrot \vb{F} =
+		0$, a hiperbolni tangens kao $\tgh x$.
+
+\section{Mjerne jedinice}
+
+	Paket \texttt{siunitx} pravilno piše veličine s mjernim jedinicama.
+	Pogrešno: $g = 9.81 ms^{-2}$, 12\%.
+	Pravilno: $g = \SI{9.81}{\meter\per\second\squared}$, \SI{12}{\percent}.
+	Brojevi bez jedinica idu kroz \verb+\num+, npr.~\num{1.23e-4}, a raspon kroz
+	\verb+\SIrange+, npr.~\SIrange{88}{94}{\giga\electronvolt}.
+
+\section{Slike}
+
+	Slike se navode bez ekstenzije i putanje ako su u folderu \texttt{slike/}, kao
+	na slici~\ref{fig:pmf}.
+	Opis slike ide ispod slike, a \verb+\label+ uvijek nakon \verb+\caption+.
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.3\textwidth]{pmf}
+		\caption{Logo Prirodno-matematičkog fakulteta.}
+		\label{fig:pmf}
+	\end{figure}
+
+\section{Feynmanovi dijagrami}
+
+	Paket \texttt{tikz-feynman} crta dijagrame direktno u \LaTeX-u, kao na
+	slici~\ref{fig:feynman}.
+
+	\begin{figure}[h]
+		\centering
+		\begin{tikzpicture}
+		\begin{feynman}
+			\vertex (a);
+			\vertex [above left=of a] (i1) {\(e^{+}\)};
+			\vertex [below left=of a] (i2) {\(e^{-}\)};
+			\vertex [right=of a] (b);
+			\vertex [above right=of b] (f1) {\(f\)};
+			\vertex [below right=of b] (f2) {\(\bar{f}\)};
+
+			\diagram* {
+				(i2) -- [fermion] (a) -- [fermion] (i1),
+				(a) -- [photon, edge label=\(\gamma\)] (b),
+				(f2) -- [fermion] (b) -- [fermion] (f1),
+			};
+		\end{feynman}
+	\end{tikzpicture}
+		\caption{Anihilacija $e^{+}e^{-} \to f\bar{f}$ preko fotona.}
+		\label{fig:feynman}
+	\end{figure}
+
+\section{Grafici}
+
+	Stil \texttt{grafik} definisan u \texttt{preamble.tex} daje jednak izgled svim
+	graficima.
+	Podaci se čitaju iz \texttt{.dat} fajla, a funkcija se može nacrtati direktno,
+	kao na slici~\ref{fig:grafik}.
+
+	\begin{figure}[h]
+		\centering
+		\begin{tikzpicture}
+		\begin{axis}[
+				grafik,
+				xmin=87.5, xmax=94.5, ymin=0,
+				xlabel={$E_{\text{CM}}$ /\si{\giga\electronvolt}},
+				ylabel={$\sigma$ /\si{\nano\barn}},
+			]
+			\addplot[blue, domain=87.5:94.5, samples=200]
+			{41.5*1.556/((x-91.19)^2+1.556)};
+			\addlegendentry{Breit--Wigner}
+			\addplot[red, only marks, mark=star, mark size=2.6pt]
+			table {chapters/primjeri/podaci.dat};
+			\addlegendentry{Podaci}
+		\end{axis}
+	\end{tikzpicture}
+		\caption{Presjek u okolini Z-pola.}
+		\label{fig:grafik}
+	\end{figure}
+
+	Općenito slobodni ste da ubacujete i iz \texttt{matplotlib} kao obični grafik,
+	ali naporno je uštimavati veličinu i stil fonta.
+
+\section{Tabele}
+
+	Tabele koriste \texttt{booktabs}, bez vertikalnih linija.
+	Opis tabele ide iznad tabele.
+	Kolone tipa \texttt{S} poravnavaju brojeve po decimali, a \texttt{table-format}
+	zadaje broj cifara prije i poslije tačke (tabela~\ref{tab:primjer}).
+
+	\begin{table}[h]
+		\centering
+		\caption{Primjer tabele s brojevima poravnatim po decimalnoj tački.}
+		\label{tab:primjer}
+		\begin{tabular}{@{}lS[table-format=2.5]S[table-format=2.5]S[table-format=1.4]@{}}
+			\toprule
+			           & {Proračun} & {Standardni model} & {Greška (\%)} \\
+			\midrule
+			$R_{\mu}$  & 20.725     & 20.735             & 0.0476        \\
+			$R_{\tau}$ & 20.725     & 20.781             & 0.2688        \\
+			\addlinespace
+			$R_{c}$    & 0.17067    & 0.17221            & 0.8935        \\
+			$R_{b}$    & 0.21955    & 0.21581            & 1.7342        \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+\section{Citiranje i izvori}
+
+	Izvori se unose u \texttt{literatura.bib}, a citiraju s \verb+\cite+,
+	npr.~knjiga o \TeX-u~\cite{texbook} ili članak~\cite{Bender_1998}.
+	Bibliografija prikazuje samo citirane izvore, poredane redom citiranja.
+
+	Svaka Wikipedia stranica~\cite{wiki:latex} ima opciju \texttt{Tools -> Cite
+		this page} (slika~\ref{fig:wiki-cite}), na kojoj se nalazi gotov BibTeX kod
+	(slika~\ref{fig:wiki-bib}).
+	Slično je i s arXivom (slika~\ref{fig:arxiv-cite}).
+	U polju \texttt{author} zarez razdvaja prezime od imena, a riječ \texttt{and}
+	razdvaja autore.
+
+	\begin{figure}[h]
+		\centering
+		\begin{subfigure}[t]{0.3\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{wikipedia-cite}
+			\caption{Cite this page.}
+			\label{fig:wiki-cite}
+		\end{subfigure}
+		%
+		\hfill
+		\begin{subfigure}[t]{0.65\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{wikipedia-bibtex}
+			\caption{Kod koji se kopira u \texttt{literatura.bib}.}
+			\label{fig:wiki-bib}
+		\end{subfigure}
+		\caption{Citiranje s Wikipedije.}
+	\end{figure}
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=\textwidth]{arxiv-cite}
+		\caption{Citiranje s arXiva.}
+		\label{fig:arxiv-cite}
+	\end{figure}
+
+	\paragraph{Napomena.}
+	Ovo je \verb+\paragraph+, naslov koji se nastavlja u istom redu.
+	Koristan je za kratke cjeline koje ne trebaju biti u sadržaju.
+
+\section[Bespotrebno dug naslov]{Ovo je jako dug naslov koji kada bi ovako stajao u sadržaju bilo bi previše, dolazilo bi do preloma, i čitava stvari bi bila u 3 reda}
+	Srećom, ako koristimo \verb+\section[Kratki naziv]{Puni naziv}+ to se ne
+	dešava.
+	Sličan pristup radi i sa slikama i tabelama,
+	\verb+\caption[Kratki opis]{Detaljni opis}+, gdje je to puno teže izbjeći.

@@ -1,0 +1,60 @@
+% !TEX root = ../../main.tex
+\chapter{Uvod}
+\label{ch:uvod}
+
+Ovaj template je namijenjen završnim radovima II ciklusa studija na Odsjeku za
+fiziku Prirodno-matematičkog fakulteta Univerziteta u Sarajevu.
+Niko se neće ljutiti ako ovo iskoristite za drugi odsjek ili fakultet (pozdrav
+ljudima s biologije), ali slobodno javite ako je dobacilo negdje baš daleko.
+
+Nastao je iz ranijeg templatea za seminarske radove~\cite{git:damir}.
+Kako su kolege (a i ja) prestali pisati seminarske, a počeli pisati
+magistarske, potrebe su se promijenile dovoljno da vrijedi izbaciti novi
+template.
+
+Naslovna stranica, abstract, dodatne stranice na engleskom itd.~su nešto što je
+koliko toliko prihvaćeno u 2026.~godini.
+Ovo je naravno neslužbena verzija, a kako zahtjevi nisu unificirani na nivou
+fakulteta očekujte komentare mentora.
+
+\section{Struktura}
+
+	\begin{description}
+		\item[main.tex]
+			Podaci za naslovnu stranicu, izbor stila i redoslijed poglavlja.
+		\item[preamble.tex]
+			Paketi, izgled stranice i naslova, itd.
+		\item[stilovi/]
+			Fontovi itd.
+		\item[chapters/]
+			Svako poglavlje u svom folderu, zajedno sa svojim slikama i podacima za
+			grafike.
+			Nije nužno, ali bude lakše pratiti šta je gdje.
+		\item[literatura.bib]
+			Izvori u BibTeX formatu.
+		\item[komande.tex, prelamanja.tex, localSettings.yaml]
+			Kome je baš dosadno.
+			Yaml je za \texttt{latexindent}.
+	\end{description}
+
+\section{Izbor stila}
+
+	Na vrhu fajla \texttt{main.tex} se nalazi red
+	\begin{center}
+		\verb+\providecommand\stil{1}+
+	\end{center}
+	gdje se broj mijenja u jedan od sljedećih:
+	\begin{enumerate}
+		\item Computer Modern;
+		\item Halalvetica (TeX Gyre Heros);
+		\item STIX.
+	\end{enumerate}
+	Stil mijenja font teksta i matematike, a sve ostalo ostaje isto.
+
+\section{Kompajliranje}
+
+	Rad se kompajlira s \texttt{pdflatex} i \texttt{biber}.
+	Overleaf i \texttt{latexmk} to rade automatski.
+	Preporučujem da skinete neku modernu verziju TexLive, Visual Studio Code i u
+	njemu instalirate ekstenzije \texttt{LaTeX Workshop} i \texttt{latexindent}
+	umjesto da plaćate Overleaf.

@@ -1,0 +1,235 @@
+% !TEX root = ./main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Autor: Damir Agačević, 2025.
+% damir@agacevic.com
+% https://github.com/theDDA/
+% GNU GPLv3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% A4, 12pt font
+\documentclass[12pt,a4paper,final,oneside]{memoir}
+
+% Mogu se direktno unositi čćžđš.
+\usepackage[utf8]{inputenc}
+% Pdf daje npr. š umjesto ˇs pri copy/paste.
+\usepackage{cmap}
+\usepackage[T1]{fontenc}
+
+% Lokalizacija
+% TeX Live nema bosanska pravila za prelamanje riječi, pa se koriste srpska.
+\usepackage{babel}
+\babelprovide[import,main,hyphenrules=serbian]{bosnian}
+\renewcommand\bosnianhyphenmins{22}
+% Kao i za serbian: bez dodatnog razmaka nakon tačke i uvučen prvi pasus
+% nakon naslova.
+\addto\extrasbosnian{\frenchspacing}
+\usepackage{indentfirst}
+
+% Navodnici usklađeni s jezikom, traži ga biblatex uz babel.
+\usepackage{csquotes}
+\DeclareQuoteAlias{serbian}{bosnian}
+
+% Proširenje matematike
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools}
+
+% Komanda \dd daje znak diferencijala koji je uspravan i malo odvojen
+% od podintegralne funkcije, npr. $\int x \dd{x}$. Parcijalni izvod: \pdv{f}{x}.
+\usepackage{physics}
+
+% Feynmanova slash notacija, npr. $\slashed{p}$.
+\usepackage{slashed}
+
+% Font teksta i matematike prema izboru \stil u main.tex.
+% Mora se učitati nakon amsmath.
+% Svaki stil definiše i \fontnaslova, font naslova poglavlja i sekcija.
+\ifcase\stil\relax
+	\PackageError{preamble}{Nepoznat stil \stil}{U main.tex izabrati \string\stil{1}, {2} ili {3}.}
+\or\input{stilovi/stil1-cm}
+\or\input{stilovi/stil2-helvetica}
+\or\input{stilovi/stil3-stix}
+\else
+	\PackageError{preamble}{Nepoznat stil \stil}{U main.tex izabrati \string\stil{1}, {2} ili {3}.}
+\fi
+
+% Uvlačenje paragrafa. Odkomentarisati da se prvi red paragrafa ne uvlači.
+% \setlength{\parindent}{0pt}
+
+% Slike
+\usepackage{graphicx}
+\graphicspath{{slike/}}
+
+% Umetanje vanjskih PDF stranica, npr. nacrta u dodatku.
+\usepackage{pdfpages}
+
+% Crtanje dijagrama u tikz
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+% Feynmanovi dijagrami
+\usepackage[compat=1.1.0]{tikz-feynman}
+
+% Grafici. Stil "grafik" daje jednak izgled svim graficima u radu:
+% \begin{axis}[grafik, xlabel=..., ...]
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{
+	compat=1.18,
+	grafik/.style={
+			scale only axis,
+			width=0.72\linewidth,
+			height=0.45\linewidth,
+			tick align=outside,
+			tick pos=left,
+			every axis plot/.append style={line width=0.9pt},
+			label style={font=\small},
+			tick label style={font=\small},
+			title style={font=\small},
+			legend style={font=\small, draw=black, fill=white, cells={anchor=west}},
+		},
+}
+
+% Proširenje za tabele
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+% Malo zraka između redova -- razlomci i indeksi inače dodiruju linije.
+\renewcommand{\arraystretch}{1.15}
+% Tekstualne kolone fiksne širine, lijevo poravnate (p kolone inače razvlače razmake).
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Proširenje za floats, potrebno za komandu [H] kojom se forsira tačno mjesto slike/tabele.
+\usepackage{float}
+
+% Rotirani floatovi, npr. \begin{sidewaystable}
+\usepackage{rotating}
+
+% Manji font opisa slika, opisi tabela iznad tabele, subcaption za opise u grupama slika.
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,justification=justified,format=hang}
+% Opisi tabela idu iznad tabele.
+\captionsetup[table]{position=above}
+
+% Lakše unošenje jedinica, npr. $g = \SI{9.81}{\meter\per\second\squared}$.
+\usepackage{siunitx}
+% physics i siunitx oba definišu \qty; ovdje \qty znači isto što i \SI.
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+% Ne razdvajati decimale u grupe po tri (0.17067, ne 0.170 67).
+\sisetup{
+	group-digits=none,
+	input-decimal-markers={.,},
+	range-phrase={ do },
+	range-units=single,
+}
+% Odkomentarisati samo ako baš treba decimalni zarez umjesto tačke.
+% \sisetup{output-decimal-marker={,}}
+\DeclareSIUnit{\barn}{b}
+
+% Liste: description labele u istoj familiji kao naslovi.
+\usepackage{enumitem}
+\setlist[description]{font=\fontnaslova\bfseries, style=nextline,
+	leftmargin=1.5em, itemsep=0.4em}
+% Liste listi se ne uvlače dodatno.
+\setlist[itemize]{leftmargin=*}
+
+% Biblatex za citate, numerisani redom citiranja.
+\usepackage[sorting=none]{biblatex}
+\addbibresource{literatura.bib}
+% Biblatex nema bosanski, uzima srpski koji je ekavski.
+\DeclareLanguageMapping{bosnian}{serbian}
+\DefineBibliographyStrings{bosnian}{
+	urlseen         = {posjećeno},
+}
+% Jedan izvor se ne prelama preko dvije stranice.
+\appto\bibsetup{\interlinepenalty=10000\relax}
+
+% Bolja tipografija i kerning
+\usepackage[activate={true,nocompatibility},final,tracking=true,kerning=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
+\SetProtrusion{encoding={*},family={*},series={*},size={6,7}}
+{1={ ,750},2={ ,500},3={ ,500},4={ ,500},5={ ,500},
+	6={ ,500},7={ ,600},8={ ,500},9={ ,500},0={ ,500}}
+
+% Linkovi
+\usepackage{hyperref}
+\usepackage{memhfixc}
+
+% Dozvoljava prelamanje align okruženja na novu stranicu
+\allowdisplaybreaks
+
+% Funkcije kako se pišu na našim prostorima.
+% Češće koristimo \varphi
+\newcommand\vp{\varphi}
+% Hiperbolne trigonometrijske:
+\DeclareMathOperator{\tgh}{th}
+% Vektorske operacije:
+\DeclareMathOperator{\rrot}{rot}
+\DeclareMathOperator{\ddiv}{div}
+\DeclareMathOperator{\ggrad}{grad}
+
+% Komande za unos podataka u naslovnu stranicu
+\makeatletter
+\newcommand\naslov[1]{\gdef\@naslov{#1}}
+\newcommand\nasloveng[1]{\gdef\@nasloveng{#1}}
+\newcommand\podnaslov[1]{\gdef\@podnaslov{#1}}
+\newcommand\podnasloveng[1]{\gdef\@podnasloveng{#1}}
+\newcommand\smjer[1]{\gdef\@smjer{#1}}
+\newcommand\smjereng[1]{\gdef\@smjereng{#1}}
+\newcommand\student[1]{\gdef\@student{#1}}
+\newcommand\profesor[1]{\gdef\@profesor{#1}}
+\newcommand\datum[1]{\gdef\@datum{#1}}
+\newcommand\datumeng[1]{\gdef\@datumeng{#1}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Izgled stranice
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Margine i blok teksta
+\settypeblocksize{*}{32pc}{1.618}
+\setbinding{0.5cm}
+\setlrmargins{1.4in}{*}{*}
+\setulmargins{*}{*}{1.3}
+
+% Slova s kvačicom (npr. Č) su viša od običnog velikog slova, pa živa glava
+% preraste \onelineskip. Malo više prostora za glavu.
+\setheadfoot{15pt}{2\onelineskip}
+\setheaderspaces{*}{2\onelineskip}{*}
+
+\checkandfixthelayout
+
+% Naslovi poglavlja i sekcija
+\makechapterstyle{mychapterstyle}{%
+	\renewcommand{\chapnamefont}{\LARGE\fontnaslova\bfseries}%
+	\renewcommand{\chapnumfont}{\LARGE\fontnaslova\bfseries}%
+	\renewcommand{\chaptitlefont}{\Huge\fontnaslova\bfseries}%
+	\renewcommand{\printchaptertitle}[1]{%
+		\chaptitlefont\hrule height 0.5pt \vspace{1em}%
+		{##1}\vspace{1em}\hrule height 0.5pt%
+	}%
+	\renewcommand{\printchapternum}{%
+		\chapnumfont\thechapter%
+	}%
+}
+
+\pagestyle{ruled}
+\chapterstyle{mychapterstyle}
+
+\setsecheadstyle{\Large\fontnaslova\bfseries}
+\setsubsecheadstyle{\large\fontnaslova\bfseries}
+\setsubsubsecheadstyle{\normalsize\fontnaslova\bfseries}
+% \paragraph kao run-in naslov: tekst se nastavlja u istom redu.
+\setparaheadstyle{\normalsize\fontnaslova\bfseries}
+\setparaindent{0pt}
+\setbeforeparaskip{1.2ex plus 0.2ex minus 0.2ex}
+\setafterparaskip{-0.5em}
+
+% Broj stranice desno (oneside i neparne), lijevo na parnim (twoside).
+\makeoddfoot{plain}{}{}{\thepage}
+\makeevenfoot{plain}{\thepage}{}{}
+
+% Numeracija i sadržaj
+\setsecnumdepth{subsection}
+\maxsecnumdepth{subsection}
+\settocdepth{subsection}
+\maxtocdepth{subsection}

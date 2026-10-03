@@ -1,0 +1,45 @@
+% !TEX root = ./main.tex
+% Podaci se unose u main.tex. Ovdje po potrebi promijeniti
+% "Supervisor:" u "Supervisors:".
+\thispagestyle{empty}
+\makeatletter
+
+\begin{figure}[t]
+	\centering
+	\begin{minipage}{.8\textwidth}
+		\centering
+		{\DoubleSpacing
+			\MakeUppercase{\large University of Sarajevo}\\
+			\MakeUppercase{\large Faculty of Natural Sciences}\\
+			\MakeUppercase{\large Department of Physics}\\
+			\MakeUppercase{\large II cycle of studies -- \@smjereng}\\
+		}
+	\end{minipage}
+\end{figure}
+\vspace*{\fill}
+\begin{center}
+	{\LARGE\bfseries\MakeUppercase{\@nasloveng}\\}
+	\vspace{1em}
+	{\large\MakeUppercase{\@podnasloveng}}
+\end{center}
+\vspace*{\fill}
+\begin{figure}[b]
+	\centering
+	\begin{minipage}[t]{\textwidth}
+		\begin{minipage}[t]{0.66\textwidth}
+			\large Supervisor:\\
+			\@profesor
+		\end{minipage}
+		%
+		\begin{minipage}[t]{0.33\textwidth}
+			\large Student:\\
+			\@student
+		\end{minipage}
+	\end{minipage}
+
+	\vspace{15mm}
+	{\large Sarajevo, \@datumeng}
+\end{figure}
+
+\makeatother
+\cleardoublepage

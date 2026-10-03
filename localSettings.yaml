@@ -1,0 +1,319 @@
+# latexindent user settings -- dda
+#
+# MINIMAL DELTA against upstream defaultSettings.yaml (V4.0.2).
+# Only keys we deliberately change from upstream live here. Previously this
+# file was a verbatim copy of the 3.24.4 defaults with edits buried in it;
+# that made the V3 -> V4 upgrade silently revert three deliberate fixes
+# (heading indentation, the tabular BodyStartsOnOwnLine overrides, and the
+# \begin guard in sentencesDoNOTcontain) because V4 renamed or dropped keys.
+# Keep this file a delta. Never paste defaultSettings.yaml in here again.
+
+# indentPreamble 0 (was 1 under V3): with it ON, V4 deletes blank lines in the
+# preamble (verified: v3.23.6 keeps them, v4.0.2 drops them, same config;
+# `-y indentPreamble:0` restores them). Measured cost of turning it off on
+# preamble.tex / komande.tex / prelamanja.tex: 0 changed lines.
+indentPreamble: 0
+
+noAdditionalIndent:
+  document: 0
+
+# V4 renamed indentAfterThisHeading -> lookForThis.
+indentAfterHeadings:
+  section:
+    lookForThis: 1
+  subsection:
+    lookForThis: 1
+  subsection*:
+    lookForThis: 1
+  # subsubsection added 2026-08-30: without it a subsubsection is not a heading
+  # code block at all, so its body inherits the enclosing section's indent
+  # instead of gaining one. 52 of them in the Medina thesis were flush with
+  # their own heading.
+  subsubsection:
+    lookForThis: 1
+  # subsubsection* needs an explicit level. V4.0.2's defaultSettings.yaml ships
+  # part/chapter/section/subsection/subsection*/subsubsection/paragraph/
+  # subparagraph -- there is NO subsubsection* entry to inherit a level from
+  # (unlike subsection*, which is upstream). Declaring it with only
+  # lookForThis leaves level undef, so Heading.pm:86 sorts the heading table
+  # against undef and emits 15 "uninitialized value in numeric comparison"
+  # warnings on EVERY run, for every file, and the subsubsection* rule itself
+  # silently never matches. level 5 mirrors subsubsection.
+  subsubsection*:
+    lookForThis: 1
+    level: 5
+
+indentRules:
+  item: "\t"
+  myitem: "\t"
+  section: "\t"
+
+# Align the amsmath display environments as ONE table: with the default
+# lookForChildCodeBlocks: 1, a \left[ / \Bigl[ group inside a row is treated as
+# a nested code block, so its continuation lines get their own indent and their
+# own & column -- a long derivation ends up with two or three different
+# alignment columns and the \\ no longer line up. Tables keep the default
+# (they genuinely do have child blocks worth indenting).
+lookForAlignDelims:
+  align:
+    lookForChildCodeBlocks: 0
+  align*:
+    lookForChildCodeBlocks: 0
+  alignat:
+    lookForChildCodeBlocks: 0
+  alignat*:
+    lookForChildCodeBlocks: 0
+  aligned:
+    lookForChildCodeBlocks: 0
+  alignedat:
+    lookForChildCodeBlocks: 0
+  split:
+    lookForChildCodeBlocks: 0
+
+# latexindent's shipped lookForAlignDelims has `tabular` but NOT `tabular*`,
+# so the & in every tabular*/longtable* body was left unaligned. Inherit the
+# tabular settings by name.
+# (added 2026-09-07 after a sideways table in the Dugonjic thesis would not align)
+  tabular*: 1
+  tabularx*: 1
+  longtable*: 1
+
+# \SI{}{} and \substack{} bodies are not prose and must not be reflowed.
+verbatimCommands:
+  SI: 1
+  substack: 1
+
+# tikz/pgfplots bodies are key-value code, not prose. With -m, oneSentencePerLine
+# treats the whole picture as one "sentence" (it ends at \end{...}), joins the
+# option lists, re-wraps them at 80 columns -- splitting key names such as
+# "x tick label style" across lines -- and hoists every % comment inside the
+# picture to the end of that sentence, concatenated into a single line.
+# verbatim keeps the body byte-for-byte; only the \begin line is re-indented.
+# (added 2026-09-01 after a groupplot in the Dugonjic thesis was destroyed on save)
+verbatimEnvironments:
+  tikzpicture: 1
+
+modifyLineBreaks:
+  environments:
+    BeginStartsOnOwnLine: 1
+    BodyStartsOnOwnLine: 1
+    EndStartsOnOwnLine: 1
+    EndFinishesWithLineBreak: 1
+    # Keep the {column spec} on the \begin line for the tabular family;
+    # otherwise a compact spec such as {@{}ll@{}} is misparsed as body.
+    # (added 2026-08-08 when table/table* left verbatimEnvironments)
+    #
+    # WRITE THE COLUMN SPEC ON ONE LINE. A spec split over several lines is
+    # only safe until some cell ends in a full stop ("Min. energija"). Then
+    # manipulateSentences below reads from inside the spec to that stop as one
+    # sentence, joins `S[...]} \toprule {Min.` onto the \begin line, and
+    # lookForAlignDelims pads every row's first column to that width -- the
+    # table survives compilation but the source is destroyed. Neither a
+    # multi-line spec nor a full stop triggers it alone; both together do.
+    # (diagnosed 2026-09-07 on two histogram tables in the Dugonjic thesis)
+    tabular:
+      BodyStartsOnOwnLine: 0
+    tabular*:
+      BodyStartsOnOwnLine: 0
+    tabularx:
+      BodyStartsOnOwnLine: 0
+    longtable:
+      BodyStartsOnOwnLine: 0
+  items:
+    ItemStartsOnOwnLine: 1            # every \item on its own line
+    # -1 added 2026-08-30 alongside the \item sentence trigger below. With the
+    # default 0, opening a sentence right after `\item ` leaves \item stranded
+    # alone on its line and the prose on the next one. -1 removes that break,
+    # so the item body stays on the \item line and wraps from there.
+    ItemFinishesWithLineBreak: -1
+  textWrapOptions:
+    columns: 80
+    blocksBeginWith:
+      0-9: 1
+    blocksFollow:
+      blankLine: 0
+  oneSentencePerLine:
+    manipulateSentences: 1
+    textWrapSentences: 1
+    sentencesFollow:
+      # par off: the bare flag matches the \par PREFIX inside \paragraph,
+      # splitting it into \par + agraph{...}. Genuine \par is caught by the
+      # anchored regex in `other` below.
+      par: 0
+      # fullStop off 2026-08-08: the built-in trigger is a naive bare dot, so
+      # any x.y token spawned a bogus sentence start (sentencesBeginWith
+      # admits a-z AND 0-9): \input{...file.pgf} split at `.pgf` (breaks the
+      # build), [width=0.9\linewidth] at `.9`, {0.48\textwidth} at `.48`.
+      # A betterFullStop-grade dot boundary lives in `other` instead.
+      fullStop: 0
+      # exclamationMark off 2026-07-09: the only `!` in this corpus is a float
+      # specifier ([!tbp]) or a math negative thin space (\!), never a sentence
+      # end. With it on, \begin{table}[!tbp] was split into `[!` + `tbp]`.
+      exclamationMark: 0
+      # rightBrace off 2026-08-19: in math `}` is everywhere, so a `}`
+      # immediately followed by a letter or digit (\sum_{i}Q_{i}, \frac{x}{y}z)
+      # opened a bogus sentence and the expression was split there. Factorial
+      # isolation: `}`+letter is necessary and sufficient; line length and a
+      # trailing full stop are both irrelevant.
+      rightBrace: 0
+      other: |-
+              (?x)
+              \\par(?![a-zA-Z@])
+              |
+              # rightBrace replacement (added 2026-08-30). Turning the bare
+              # rightBrace trigger off on 2026-08-19 also killed the only thing
+              # that opened a sentence after a heading line: with
+              # `\subsubsection{...}` on one line and the paragraph on the
+              # next, no sentence started, so the whole paragraph escaped
+              # textWrap and stayed at 500+ columns. Anchoring the brace to
+              # END OF LINE keeps the math case fixed (`\sum_{i}Q_{i}` has no
+              # line break) while restoring macro-line -> prose boundaries.
+              \}\h*\R(?=\h*[A-Za-z])
+              |
+              # \item added 2026-08-30: an item body had no sentence trigger at
+              # all, so a list entry never entered textWrap no matter how long
+              # (18 lines over 90 columns in Uvod.tex alone). The optional
+              # [...] keeps \item[Label] working; the trailing \h+ is what
+              # stops \itemsep and friends from matching. \bibitem cannot
+              # match -- the rule needs a backslash immediately before `item`.
+              \\item\h*(?:\[[^]]*\])?\h+
+              |
+              (?:
+                \.\)
+                (?!\h*[a-z])
+              )
+              |
+              (?:
+                (?<!
+                  (?:
+                    (?:[eE]\.[gG])
+                    |
+                    (?:[iI]\.[eE])
+                    |
+                    (?:etc)
+                    |
+                    (?:[wW]\.[rR]\.[tT])
+                    |
+                    # Bosnian/Croatian abbreviations (added 2026-09-07). Without
+                    # them "... $\gamma$ itd.) uzele u obzir" broke after the
+                    # stop, stranding the closing paren alone on the next line.
+                    # dr. / tzv. need no entry: both are always followed by ~
+                    # here, which the lookahead below already excludes.
+                    (?:[iI]td)
+                    |
+                    (?:[nN]pr)
+                    |
+                    (?:[tT]j)
+                  )
+                )
+              )
+              \.
+              (?!
+                (?:
+                  \s*\d
+                  |
+                  [a-zA-Z-~,]
+                  |
+                  \),
+                )
+              )
+    sentencesBeginWith:
+      a-z: 1
+      # digit-leading names (3D-GTDSE) and \'O~Broin may start a sentence.
+      # The control-sequence branch (added 2026-08-30) is what lets a paragraph
+      # that OPENS with a macro wrap at all -- `\textbf{SI jedinica} LET je ...`
+      # stayed at 245 columns because no sentence could start on a backslash.
+      # ALLOWLIST, not a denylist: the first attempt excluded a list of
+      # structural macros and main.tex was mangled the same day --
+      # \microtypesetup / \tableofcontents / \cleardoublepage got joined into
+      # one wrapped "sentence", \frontmatter% lost its %, and the trailing
+      # comment block was concatenated into a single line. A denylist can never
+      # enumerate every structural macro; only text-formatting macros actually
+      # lead prose, so name those and nothing else. \item has its own trigger
+      # in sentencesFollow.
+      other: "(?:[0-9]|\\\\'[A-Z]|\\\\(?:emph|text(?:bf|it|sc|tt|sl|sf|rm|up|normal|superscript|subscript)?|SI|num)\\b)"
+    sentencesEndWith:
+      # see sentencesFollow.exclamationMark above
+      exclamationMark: 0
+      # betterFullStop off 2026-09-07. Its built-in abbreviation guard knows
+      # only e.g / i.e / etc, so a Bosnian abbreviation ENDED the sentence
+      # even though sentencesFollow.other refuses to START one there:
+      # "(X, $\alpha$, ... itd." then ") uzele u obzir," alone on the next
+      # line. Turning off sentencesFollow.fullStop was never enough -- the
+      # end trigger is a separate switch. `other` below repeats the same
+      # augmented betterFullStop regex used in sentencesFollow.
+      betterFullStop: 0
+      # Force a boundary at the close of ANY environment. Without this,
+      # \end{...} reads as mid-sentence and the following paragraph gets a
+      # premature break whose position drifts with the environment's length.
+      # The \begin lookahead (added 2026-08-30) ends the sentence at the line
+      # before a display. Without it a prose lead-in that runs into
+      # \begin{equation} without a full stop swallows the environment, and
+      # sentencesDoNOTcontain's \begin guard then drops the whole thing from
+      # textWrap -- the lead-in stayed unwrapped. Zero-width, so the display
+      # itself is untouched: equation bodies are byte-identical either way.
+      other: |-
+              (?x)
+              \\end\{[a-zA-Z]+\*?\}
+              |
+              (?=\R\h*\\begin\{)
+              |
+              (?:
+                \.\)
+                (?!\h*[a-z])
+              )
+              |
+              (?:
+                (?<!
+                  (?:
+                    (?:[eE]\.[gG])
+                    |
+                    (?:[iI]\.[eE])
+                    |
+                    (?:etc)
+                    |
+                    (?:[wW]\.[rR]\.[tT])
+                    |
+                    (?:[iI]td)
+                    |
+                    (?:[nN]pr)
+                    |
+                    (?:[tT]j)
+                  )
+                )
+              )
+              \.
+              (?!
+                (?:
+                  \s*\d
+                  |
+                  [a-zA-Z-~,]
+                  |
+                  \),
+                )
+              )
+    sentencesDoNOTcontain:
+      # \begin is UPSTREAM DEFAULT -- it must stay in this alternation. Losing
+      # it is what let a prose lead-in and the whole following display be
+      # scanned as one sentence and wrapped at 80 columns inside the math.
+      # \mathrm deliberately NOT listed: too common in display math, it
+      # silently disabled textWrap for any prose sentence touching an equation.
+      other: |-
+              (?x)
+              \\begin
+              |
+              \\shortintertext
+              |
+              \\intertext
+              |
+              \\footnote
+              |
+              \$\$
+              |
+              \\\\
+              |
+              \'\'
+              |
+              # a bare (unescaped) & is a tabular/align column separator:
+              # any "sentence" containing one is a table row, not prose.
+              (?<!\\)&

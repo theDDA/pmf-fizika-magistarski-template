@@ -1,0 +1,46 @@
+% !TEX root = ./main.tex
+% Podaci se unose u main.tex. Ovdje po potrebi promijeniti
+% "Mentor:" u "Mentori:" i "Kandidat:" u "Kandidatkinja:".
+\thispagestyle{empty}
+\makeatletter
+
+\begin{figure}[t]
+	\centering
+	\begin{minipage}{.8\textwidth}
+		\centering
+		{\DoubleSpacing
+			\MakeUppercase{\large Univerzitet u Sarajevu}\\
+			\MakeUppercase{\large Prirodno--matematički fakultet}\\
+			\MakeUppercase{\large Odsjek za fiziku}\\
+			\MakeUppercase{\large II ciklus studija -- smjer \@smjer}\\
+		}
+	\end{minipage}
+\end{figure}
+\vspace*{\fill}
+\begin{center}
+	% Obrisati \MakeUppercase u ova dva reda ukoliko nisu potrebna velika slova.
+	{\LARGE\bfseries\MakeUppercase{\@naslov}\\}
+	\vspace{1em}
+	{\large\MakeUppercase{\@podnaslov}}
+\end{center}
+\vspace*{\fill}
+\begin{figure}[b]
+	\centering
+	\begin{minipage}[t]{\textwidth}
+		\begin{minipage}[t]{0.66\textwidth}
+			\large Mentor:\\
+			\@profesor
+		\end{minipage}
+		%
+		\begin{minipage}[t]{0.33\textwidth}
+			\large Kandidat:\\
+			\@student
+		\end{minipage}
+	\end{minipage}
+
+	\vspace{15mm}
+	{\large Sarajevo, \@datum}
+\end{figure}
+
+\makeatother
+\cleardoublepage

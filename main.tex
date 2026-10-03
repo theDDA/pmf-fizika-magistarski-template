@@ -1,0 +1,83 @@
+% !TEX root = ./main.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Template za završne radove II ciklusa studija na Odsjeku za fiziku PMF Sarajevo.
+%
+% Autor: Damir Agačević, 2025.
+% damir@agacevic.com
+% https://github.com/theDDA/
+% GNU GPLv3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Izbor stila: 1, 2 ili 3.
+\providecommand\stil{3}
+
+\input{preamble}
+
+% Pravila za prelamanja riječi
+\input{prelamanja}
+\exhyphenpenalty=500
+
+% Dodatne komande za često korištene simbole
+\input{komande}
+
+\begin{document}
+
+	\naslov{Naslov magistarskog rada}
+	\nasloveng{Title of the master's thesis}
+	\podnaslov{Završni rad II ciklusa studija}
+	\podnasloveng{Master's thesis}
+	\smjer{Fizika}
+	\smjereng{Physics}
+	\student{Ime Prezime}
+	% Više mentora se razdvaja s \\
+	\profesor{prof.~dr.~Ime Prezime}
+
+	\datum{septembar \the\year.}
+	\datumeng{September \the\year.}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\include{naslovna}
+	\include{naslovna_eng}
+	\include{abstract}
+	\include{zahvala}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\frontmatter
+
+	\microtypesetup{protrusion=false}
+	\tableofcontents
+	\cleardoublepage
+	\listoffigures
+	\cleardoublepage
+	\listoftables
+	\microtypesetup{protrusion=true}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\OnehalfSpacing
+
+	\mainmatter
+
+	\include{chapters/uvod/uvod}
+
+	\include{chapters/primjeri/primjeri}
+
+	\include{chapters/zakljucak/zakljucak}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\appendix
+
+	\include{chapters/dodatak/dodatak}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	\backmatter
+
+	% Izbacuje sve izvore koji su u literatura.bib, i one koji nisu citirani.
+	% \nocite{*}
+	\printbibliography[title={Bibliografija},heading=bibintoc]
+
+\end{document}
